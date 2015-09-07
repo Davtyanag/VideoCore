@@ -60,20 +60,30 @@ namespace videocore
         
         
         int tokenCount = 0;
-        std::stringstream pp;
-        for ( auto it = uri_tokens.begin() ; it != uri_tokens.end() ; ++it) {
+        std::stringstream app;
+        
+        auto it = uri_tokens.begin();
+        while (it != uri_tokens.end()) {
             if(tokenCount++ < 2) { // skip protocol and host/port
+                ++it;
                 continue;
             }
-            if(tokenCount == 3) {
-                m_app = *it;
-            } else {
-                pp << *it << "/";
+            std::string token = *it;
+            m_playPath = token;
+            if (++it != uri_tokens.end()) {
+                app << token << "/";
             }
         }
         
-        m_playPath = pp.str();
-        m_playPath.pop_back();
+        std::string app_str = app.str();
+        app_str.pop_back();
+        
+        if (m_uri.search.size() > 0) {
+            m_app = app_str.append("?").append(m_uri.search);
+        }
+        m_playPath = m_playPath.substr(0, m_playPath.size() - (m_uri.search.size() > 0 ? (m_uri.search.size() + 1) : 0));
+        
+        
         DLog("playPath: %s, app: %s", m_playPath.c_str(), m_app.c_str());
         long port = (m_uri.port > 0) ? m_uri.port : 1935;
         
@@ -419,9 +429,9 @@ namespace videocore
         std::vector<uint8_t> buff;
         std::stringstream url ;
         if(m_uri.port > 0) {
-            url << m_uri.protocol << "://" << m_uri.host << ":" << m_uri.port << "/" << m_app;
+            url << m_uri.protocol << "://" << m_uri.host << ":" << m_uri.port << m_uri.path << "?" << m_uri.search;
         } else {
-            url << m_uri.protocol << "://" << m_uri.host << "/" << m_app;
+            url << m_uri.protocol << "://" << m_uri.host << m_uri.path << "?" << m_uri.search;
         }
         put_string(buff, "connect");
         put_double(buff, ++m_numberOfInvokes);
