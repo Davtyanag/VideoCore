@@ -769,7 +769,11 @@ namespace videocore
                 DLog("received notify\n");
             }
                 break;
-                
+            case RTMP_PT_BUG:
+            {
+                DLog("received unknown packet type: 0x%02X\n", msgTypeId);
+            }
+                break;
             default:
             {
                 DLog("received unknown packet type: 0x%02X\n", msgTypeId);
@@ -784,7 +788,7 @@ namespace videocore
     {
         const size_t size = m_streamInBuffer->size();
         
-        uint8_t buf[size], *p, *start ;
+        uint8_t buf[size], *p;
         
         p = &buf[0];
         

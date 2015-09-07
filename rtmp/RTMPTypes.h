@@ -130,6 +130,7 @@ enum {
     RTMP_PT_SHARED_OBJ   = 0x13,
     RTMP_PT_INVOKE       = 0x14,
     RTMP_PT_METADATA     = 0x16,
+    RTMP_PT_BUG          = 0xC8,
 };
 
 enum {
